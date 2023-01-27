@@ -14,11 +14,15 @@ import projects.service.ProjectService;
 public class ProjectsApp {
 	private Scanner scanner = new Scanner(System.in);
 	private ProjectService projectService = new ProjectService();
+	private Project curProject;
 
 	//this will be printed in the console so the user knows what selection to make
+	//WEEK 10: Added #2 - List projects
 	//@formatter:off
 	private List <String> operations = List.of(
-	 "1) Add a project"	
+	 "1) Add a project",
+	 "2) List projects",
+	 "3) Select a project"
 	
 			);
 	//@formatter:on
@@ -31,6 +35,7 @@ public class ProjectsApp {
 		
 	}
 //displays the menu selections, gets a selection from the user, and acts on the selection. Try catch in case of exception
+	//WEEK 10: added case 2 for listProjects and case 3 for selectProject
 	private void processUserSelections() {
 		// TODO Auto-generated method stub
 		boolean done = false;
@@ -43,12 +48,18 @@ public class ProjectsApp {
 				case -1:
 					done = exitMenu();
 					break;
+					case 1:
+						createProject();
+						break;
+					case 2:
+						listProjects();
+						break;
+					case 3:
+						selectProject();
+						break;
 					default: 
 						System.out.println("\n" + selection + " is not valid. Try again.");
 						break;
-					case 1:
-						createProject();
-						break;		
 				}
 			} 
 			catch(Exception e) {
@@ -57,6 +68,29 @@ public class ProjectsApp {
 		}
 	}
 
+	//WEEK 10: lists the project IDs and names so the user can select a project ID. Once the ID is entered, the project details will be returned.
+	private void selectProject() {
+	  listProjects();
+	  Integer projectId = getIntInput ("Enter a project ID to select a project");
+	  
+	  //Unselects the current project
+	  curProject = null;
+	  
+	  //thows an exception if an invalid project id is entered
+	  curProject = projectService.fetchProjectById(projectId);
+	  
+	
+}
+	//WEEK 10: listProjects method lists out the project with the name and ID, : and and indent for each line
+	private void listProjects() {
+		List<Project> projects = projectService.fetchAllProjects();
+		
+		System.out.println("\nProjects:");
+		
+		projects.forEach(project -> System.out.println("   " + project.getProjectId() + ": " + project.getProjectName()));
+		
+		
+	}
 	//gathers project details from user
 	private void createProject() {
 		String projectName = getStringInput ("Enter the project name");
@@ -129,9 +163,18 @@ public class ProjectsApp {
 	}
 
 	//prints each available selection on a separate line in the console
+	//WEEK 10: Prints the current project when the available menu selections are displayed
 	private void printOperations() {
 		System.out.println("\nThese are the available selections. Press the Enter Key to quit:");
 		operations.forEach(line -> System.out.println("  " + line));
+		
+	//WEEK 10 addition for printOperations
+		if (Objects.isNull(curProject)) {
+			System.out.println("\nYou are not working with a project.");
+		}
+		else {
+			System.out.println("\nYou are working with project: " + curProject);
+		}
 		
 	}
 
