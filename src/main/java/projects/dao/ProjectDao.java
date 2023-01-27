@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -156,7 +155,7 @@ public class ProjectDao extends DaoBase {
 	private List<Material> fetchMaterialsForProject(Connection conn, Integer projectId) throws SQLException{
 		//@formatter: off
 		String sql = "SELECT * FROM " + MATERIAL_TABLE
-				+ "WHERE project_id = ?";
+				+ " WHERE project_id = ?";
 		//@formatter: on
 				
 				try(PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -177,7 +176,7 @@ public class ProjectDao extends DaoBase {
 	private List<Step> fetchStepsForProject(Connection conn, Integer projectId) throws SQLException {
 		//@formatter: off
 		String sql = "SELECT * FROM " + STEP_TABLE
-				+ "WHERE project_id = ?";
+				+ " WHERE project_id = ?";
 		//@formatter: on
 		
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
