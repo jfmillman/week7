@@ -17,25 +17,28 @@ public class ProjectsApp {
 	private Project curProject;
 
 	//this will be printed in the console so the user knows what selection to make
-	//WEEK 10: Added #2 - List projects
+	//WEEK 10: Added #2 - List projects and #3 - Select a project
+	//WEEK 11: Added #4 = Update project details and #5 = Delete a project
 	//@formatter:off
 	private List <String> operations = List.of(
 	 "1) Add a project",
 	 "2) List projects",
-	 "3) Select a project"
+	 "3) Select a project", 
+	 "4) Update project deatails",
+	 "5) Delete a project"
 	
 			);
 	//@formatter:on
 
 	//this method processes the menu
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		new ProjectsApp().processUserSelections();
 	
 		
 	}
 //displays the menu selections, gets a selection from the user, and acts on the selection. Try catch in case of exception
 	//WEEK 10: added case 2 for listProjects and case 3 for selectProject
+	//WEEK 11: added case 4 for updateProjectDetails and case 5 for deleteProject
 	private void processUserSelections() {
 		// TODO Auto-generated method stub
 		boolean done = false;
@@ -57,6 +60,12 @@ public class ProjectsApp {
 					case 3:
 						selectProject();
 						break;
+					case 4:
+						updateProjectDetails();
+						break;
+					case 5:
+						deleteProejct();
+						break;
 					default: 
 						System.out.println("\n" + selection + " is not valid. Try again.");
 						break;
@@ -68,6 +77,50 @@ public class ProjectsApp {
 		}
 	}
 
+	//WEEK 11: first call method listProjects, then prompt the user to enter the project ID. Then call the deleteProject method to delete the 
+	//project based on the ID the user enters. Lastly we have a check to see if the project ID in the current project is the same as the ID entered by the user
+	private void deleteProejct() {
+		listProjects();
+		
+		Integer projectId = getIntInput("Enter the ID of the project to delete");
+		
+		projectService.deleteProject(projectId);
+		System.out.println("Project " + projectId + " was deleted successfully.");
+		
+		if (Objects.nonNull(curProject) && curProject.getProjectId().equals(projectId)) {
+			curProject = null;
+		}
+	
+}
+	//WEEK 11: checked to see if project is null. If is, prompts the user to select a project. If not null, it will print a message asking for projectName, estimatedHours,
+	//actualHours, difficulty, and notes. Then I created a new project object. if the value is not null, the new input value is added to the project object. If null,
+	//the value from curProject is added.
+	private void updateProjectDetails() {
+		if(Objects.isNull(curProject)) {
+			System.out.println("\nPlease select a project");
+			return;
+		}
+		
+		String projectName = getStringInput("Enter the project name [" + curProject.getProjectName() + "]");
+		BigDecimal estimatedHours = getDecimalInput("Enter the estimated hours [" + curProject.getEstimatedHours() + "]");
+		BigDecimal actualHours = getDecimalInput ("Enter the actual hours [" + curProject.getActualHours() + "]");
+		Integer difficulty = getIntInput("Enter the project difficulty (1-5) [" + curProject.getDifficulty() + "]");
+		String notes = getStringInput("Enter the project notes [" + curProject.getNotes() + "]");
+		
+		Project project = new Project();
+		
+		project.setProjectId(curProject.getProjectId());
+		project.setProjectName(Objects.isNull(projectName) ? curProject.getProjectName() : projectName);
+		project.setEstimatedHours(Objects.isNull(estimatedHours) ? curProject.getEstimatedHours() : estimatedHours);
+		project.setActualHours(Objects.isNull(actualHours) ? curProject.getActualHours() : actualHours);
+		project.setDifficulty(Objects.isNull(difficulty) ? curProject.getDifficulty() : difficulty);
+		project.setNotes(Objects.isNull(notes) ? curProject.getNotes() : notes);
+		
+		projectService.modifyProjectDetails(project);
+		
+		curProject = projectService.fetchProjectById(curProject.getProjectId());
+	
+}
 	//WEEK 10: lists the project IDs and names so the user can select a project ID. Once the ID is entered, the project details will be returned.
 	private void selectProject() {
 	  listProjects();
